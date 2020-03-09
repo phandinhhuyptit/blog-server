@@ -1,0 +1,23 @@
+version: '3.3'
+services:
+    db:
+        image: mongo
+        ports:
+            - 27010:27017
+        restart: always
+        volumes:
+            - /root/blog-backend-backup/backups:/backups
+        container_name: meetbear-mongo-db
+    redis:
+        image: redis
+        ports:
+            - 6377:6379
+        restart: always
+        container_name: blog-redis
+    blogContainer:
+        image: blog-backend-image
+        restart: always
+        ports:
+            - 5000:5000
+        container_name: blogContainer
+    
