@@ -4,4 +4,5 @@ import serverError from "../../utils/serverError";
 
 export default class Authentication {
   static signIn = async () => {};
+  static signUp = async () => {};
 }
