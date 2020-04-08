@@ -1,15 +1,14 @@
 import jwt from "jsonwebtoken";
-import configs from "../../configs/config";
 import { client } from "../redis";
-import revokedTokenServices from "../services/auth";
 import { createToken } from "../jwt";
 import configs from "../../configs/config";
 import ServerError from "../serverError";
+import RevokedToken from "../../models/revokedToken.js";
 import { REFESH_TOKEN, ACCESS_TOKEN } from "../constant";
 
 const redisClient = client;
 
-const getAllToken = async (userId) => {
+const getAllToken = async (user) => {
   const accessToken = await createToken(user, ACCESS_TOKEN);
   const refreshToken = await createToken(user, REFESH_TOKEN);
   return {
@@ -52,10 +51,12 @@ const expiryAccessToken = async (token) => {
 
 const verifyRefreshToken = async (token) => {
   try {
-    const revokedToken = await revokedTokenServices.findByRefreshToken(token);
-    if (revokedToken) throw Error("Token had expired");
-    const { userId } = jwt.verify(token, configs.JWT_SECRET_TOKEN);
-    return userId;
+    const Obj = {};
+    Object.assign(Obj, { token: token });
+    const revokedToken = await RevokedToken.findOne(Obj);
+    if (revokedToken) throw ServerError("Token had expired");
+    const { user } = jwt.verify(token, configs.JWT_SECRET_TOKEN);
+    return user;
   } catch (error) {
     throw error;
   }
@@ -64,10 +65,11 @@ const verifyRefreshToken = async (token) => {
 const expiryRefreshToken = async (token) => {
   const { exp } = await jwt.verify(token, configs.JWT_SECRET_TOKEN);
   const expiredDate = new Date(exp * 1000);
-  const revokedToken = await revokedTokenServices.createRevokedToken(
+  const createToken = {
     token,
-    expiredDate
-  );
+    expiredAt: expiredDate,
+  };
+  const revokedToken = new RevokedToken(createToken).save();
   return revokedToken;
 };
 

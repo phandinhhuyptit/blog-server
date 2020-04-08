@@ -28,8 +28,7 @@ const authorized = (type, roles) => {
       if (type === REFRESH_TOKEN)
         userId = await authenticator.verifyRefreshToken(token);
       let user = await userService.findById(userId);
-      if (!user) user = await managerService.findById(userId);
-      else user.role = allRole.USER;
+      user.role = allRole.USER;
       req.credentials = { user, token };
       if (!user) throw new ServerError("Require authentication");
       if (!roles.includes(user.role))
