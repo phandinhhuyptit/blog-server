@@ -18,6 +18,4 @@ client.on("error", function (err) {
   process.exit(0);
 });
 
-export default {
-  client,
-};
+export { client };
