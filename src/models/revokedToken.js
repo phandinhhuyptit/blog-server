@@ -6,5 +6,5 @@ const revokedTokenSchema = new Schema({
   expiredAt: { type: Date, required: true, default: Date.now },
 });
 
-userSchema.plugin(uniqueValidator);
+revokedTokenSchema.plugin(uniqueValidator);
 export default mongoose.model("RevokedToken", revokedTokenSchema);
