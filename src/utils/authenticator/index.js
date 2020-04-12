@@ -32,8 +32,8 @@ const verifyAccessToken = async (token) => {
     const logouted =
       (await redisClient.getAsync(token)) == "logouted" ? true : false;
     if (logouted) throw ServerError("Token had expired");
-    const { userId } = jwt.verify(token, configs.JWT_SECRET_TOKEN);
-    return userId;
+    const { user } = jwt.verify(token, configs.JWT_SECRET_TOKEN);
+    return user;
   } catch (error) {
     throw error;
   }

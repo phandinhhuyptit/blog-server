@@ -1,9 +1,13 @@
 import redis from "redis";
 import bluebird from "bluebird";
-import config from "./../../config/index";
-import logger from "../../libs/logger";
+import configs from "../../configs/config";
+import logger from "../logger";
 
-const redisOptions = config.redis;
+const redisOptions = {
+  host: configs.REDIS_HOST,
+  port: configs.REDIS_PORT,
+  prefix: configs.REDIS_PREFIX || "",
+};
 
 bluebird.promisifyAll(redis.RedisClient.prototype);
 bluebird.promisifyAll(redis.Multi.prototype);
