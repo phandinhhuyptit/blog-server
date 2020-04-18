@@ -7,6 +7,7 @@ import authorized from "../../middleware/ authorized";
 const routes = Router();
 
 routes.post("/sign-up", validatorBody(authSchema.registerSchema), authEndpoint.signUpEndpoint);
+routes.post("/sign-in", validatorBody(authSchema.loginSchema), authEndpoint.signInEndPoint);
 
 // routes.get(
 //   "/user/sign-in",
