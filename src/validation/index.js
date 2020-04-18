@@ -1,3 +1,4 @@
-import * as authSchema from "./authentication";
+import authSchema from "./authentication";
+
 
 export { authSchema };

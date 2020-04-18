@@ -1,11 +1,11 @@
 import Joi from "joi";
-import { SEX_ENUM } from "../utils/constant";
+import { SEX_ENUM ,STATUS_USER_ENUM } from "../utils/constant";
 
 const allSexValue = Object.keys(SEX_ENUM).map((sexKey) => SEX_ENUM[sexKey]);
-
+const allStatusValue = Object.keys(STATUS_USER_ENUM).map(statusKey =>  STATUS_USER_ENUM[statusKey])
 const loginSchema = Joi.object().keys({
   email: Joi.string().email().max(256).required(),
-  password: Joi.string().strip().required(),
+  password: Joi.string().required(),
 });
 
 const registerSchema = Joi.object().keys({
@@ -25,6 +25,7 @@ const registerSchema = Joi.object().keys({
     .valid(Joi.ref("password"))
     .required()
     .label("Password confirm"),
+  status: Joi.string().valid(allStatusValue),  
 });
 
 const changePasswordSchema = Joi.object().keys({
