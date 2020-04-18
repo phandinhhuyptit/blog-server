@@ -2,12 +2,11 @@ import mongoose, { Schema } from "mongoose";
 import uniqueValidator from "mongoose-unique-validator";
 
 const userSchema = new Schema({
-  username: { type: String, required: true, unique: true },
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
   dateOfBirth: { type: Date, min: "1930-01-01", max: Date.now() },
   password: { type: String, required: true, select: false },
-  email: { type: String, required: true },
+  email: { type: String, required: true,unique: true },
   phone: { type: String, required: true },
   gender: { type: String, required: true },
   address: { type: String, default: null },

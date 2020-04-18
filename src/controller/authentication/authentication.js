@@ -14,6 +14,7 @@ export default class Authentication {
       email,
       gender,
       address,
+      phone,
     } = req.body;
 
     let user;
@@ -22,6 +23,7 @@ export default class Authentication {
     if (user) throw new ServerError("User already exist", 400);
 
     const objUser = {
+      phone,
       username,
       firstName,
       lastName,

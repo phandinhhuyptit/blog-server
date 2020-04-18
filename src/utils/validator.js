@@ -7,8 +7,7 @@ const validatorBody = (schema) => {
     const result = Joi.validate(req.body, schema);
     if (result.error !== null) {
       logger.error(result.error);
-      res
-        .status(result.error.code || 500)
+      res.status(result.error.code || 500)
         .json({ message: result.error.message });
     }
     return next();
@@ -20,8 +19,7 @@ const validatorQuery = (schema) => {
     const result = Joi.validate(req.query, schema);
     if (result.error !== null) {
       logger.error(result.error);
-      res
-        .status(result.error.code || 500)
+      res.status(result.error.code || 500)
         .json({ message: result.error.message });
     }
     return next();
@@ -32,8 +30,7 @@ const validatorParams = (schema) => {
     const result = Joi.validate(req.params, schema);
     if (result.error !== null) {
       logger.error(result.error);
-      res
-        .status(result.error.code || 500)
+      res.status(result.error.code || 500)
         .json({ message: result.error.message });
     }
     return next();

@@ -15,4 +15,6 @@ export default {
   VERSION_TOKEN: process.env.VERSION_TOKEN,
   REDIS_HOST: process.env.REDIS_HOST,
   REDIS_PORT: process.env.REDIS_PORT,
+  CORS: process.env.CORS,
+  
 };
