@@ -20,12 +20,14 @@ const authorized = (type, roles) => {
     try {
       let userId;
       if (type === ACCESS_TOKEN) {
-        userId = await authenticator.verifyAccessToken(token);
+        const user = await authenticator.verifyAccessToken(token);
+        userId = loGet(user,["_id"],"") 
       }
       if (type === REFRESH_TOKEN) {
-        userId = await authenticator.verifyRefreshToken(token);
+        const user = await authenticator.verifyRefreshToken(token);
+        userId = loGet(user,["_id"],"") 
       }
-      const user = await User.findById(userId);
+      const user = await User.findById(userId).populated("role");
       req.credentials = { user, token };
       if (!user) throw new ServerError("Require authentication");
       if (!roles.includes(user.role))

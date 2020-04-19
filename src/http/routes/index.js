@@ -1,11 +1,13 @@
 import express from "express";
 
 import authRouter from "./authentication";
+import roleRouter from "./role"
 
 const router = express.Router();
 
 router.get("/", (req, res) => res.status(200).json("API"));
 router.use("/user", authRouter);
+router.use("/role", roleRouter);
 
 router.use((err, req, res, next) => {
   if (err.name !== "HttpError" || !err.errorCode) return next(err);

@@ -1,5 +1,6 @@
 import loGet from "lodash/get";
 import User from "../../models/user";
+import Role from "../../models/role"
 import ServerError from "../../utils/serverError";
 import crypto from "../../utils/crypto/crypto";
 import { STATUS_USER_ENUM } from "../../utils/constant";
@@ -16,12 +17,21 @@ export default class Authentication {
       gender,
       address,
       phone,
+      role,
     } = req.body;
 
-    let user;
-
+    let user,roleUser;
+     
     user = await User.findOne({ email });
-    if (user) throw new ServerError("User already exist", 400);
+    if (user) throw new ServerError("User already exist", 404);
+    if(role) {
+      roleUser = await Role.findOne({ name : role})
+      if(!roleUser) throw new ServerError("Role not exist", 404);   
+    }
+    else {
+      roleUser = await Role.findOne({ name : "member"}) 
+    }  
+    
 
     const objUser = {
       phone,
@@ -33,6 +43,7 @@ export default class Authentication {
       email,
       gender,
       address,
+      role : loGet(roleUser,["_id"],""),
     };
 
     user = new User(objUser);

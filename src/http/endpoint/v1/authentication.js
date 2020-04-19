@@ -19,17 +19,28 @@ export const signInEndPoint = async (req, res) => {
   const vailid = ["_id", "firstName", "lastName"];
   try {
     const user = await Authentication.signIn(req, res);
-    const transformedUser = user.toJSON()
+    const transformedUser = user.toJSON();
     const newUser = Object.keys(transformedUser).reduce((acc, key) => {
-      if (vailid.includes(key)){
-        return { ...acc,[key]: user[key] };
-      } 
+      if (vailid.includes(key)) {
+        return { ...acc, [key]: user[key] };
+      }
       return acc;
     }, {});
     const token = await authenticator.getAllToken(newUser);
     res.json({
       message: "Success",
-      token,
+      user: {
+        _id: user._id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        phone: user.phone,
+        dateOfBirth: user.dateOfBirth,
+        gender: user.gender,
+        address: user.address,
+        email: user.email,
+        acessToken: token.accessToken,
+        refreshToken: token.refreshToken,
+      },
     });
   } catch (error) {
     logger.error(error);

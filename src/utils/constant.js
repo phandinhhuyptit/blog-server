@@ -6,6 +6,12 @@ export const STATUS_USER_ENUM = {
   BLOCKED: "blocked",
 };
 
+export const STATUS_ROLE_ENUM = {
+  ACTIVE: "active",
+  PENDING: "pending",
+  BLOCKED: "blocked",
+};
+
 export const TOKEN_ENUM = {
   ACCESS_TOKEN: "ACCESS_TOKEN",
   REFRESH_TOKEN: "REFRESH_TOKEN",

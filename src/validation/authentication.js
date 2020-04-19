@@ -25,7 +25,8 @@ const registerSchema = Joi.object().keys({
     .valid(Joi.ref("password"))
     .required()
     .label("Password confirm"),
-  status: Joi.string().valid(allStatusValue),  
+  status: Joi.string().valid(allStatusValue),
+  role: Joi.string(),
 });
 
 const changePasswordSchema = Joi.object().keys({

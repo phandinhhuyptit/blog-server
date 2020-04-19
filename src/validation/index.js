@@ -1,4 +1,5 @@
 import authSchema from "./authentication";
+import roleSchema from "./role"
 
 
-export { authSchema };
+export { authSchema ,roleSchema };
