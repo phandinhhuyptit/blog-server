@@ -32,10 +32,16 @@ const verifyAccessToken = async (token) => {
     const logouted =
       (await redisClient.getAsync(token)) == "logouted" ? true : false;
     if (logouted) throw ServerError("Token had expired");
-    const { user } = jwt.verify(token, configs.JWT_SECRET_TOKEN);
-    return user;
+    // const payload = await jwt.verify(token, configs.JWT_SECRET_TOKEN)
+    const payload = await new Promise((resolve, reject) =>
+       jwt.verify(token, configs.JWT_SECRET_TOKEN, (error, payload) => {
+        if (error) return reject(error);
+        return resolve(payload);
+      })
+    );
+    return payload;
   } catch (error) {
-    throw error;
+    throw ServerError(`${error.message}`);
   }
 };
 
@@ -55,7 +61,12 @@ const verifyRefreshToken = async (token) => {
     Object.assign(Obj, { token: token });
     const revokedToken = await RevokedToken.findOne(Obj);
     if (revokedToken) throw ServerError("Token had expired");
-    const { user } = jwt.verify(token, configs.JWT_SECRET_TOKEN);
+    const { user } = await new Promise((resolve, reject) =>
+      jwt.verify(token, configs.JWT_SECRET_TOKEN, (error, payload) => {
+        if (error) return reject(error);
+        return resolve(payload);
+      })
+    );
     return user;
   } catch (error) {
     throw error;

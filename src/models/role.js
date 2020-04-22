@@ -3,7 +3,7 @@ import uniqueValidator from "mongoose-unique-validator";
 
 const roleSchema = new Schema({
   name: { type: String, required: true, unique: true },
-  code: { type: Number, required: true },
+  status: { type: String, required: true, default: "active"},
 });
 
 roleSchema.plugin(uniqueValidator);
