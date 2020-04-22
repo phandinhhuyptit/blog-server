@@ -1,4 +1,4 @@
-import authenticator from "../utils/authenticator";
+import authenticator from "../utils/authenticator/index";
 import User from "../models/user";
 import loGet from "lodash/get";
 import logger from "../utils/logger";
@@ -20,23 +20,25 @@ const authorized = (type, roles) => {
     try {
       let userId;
       if (type === ACCESS_TOKEN) {
-        const user = await authenticator.verifyAccessToken(token);
+        const user = await authenticator.verifyAccessToken(token)
         userId = loGet(user,["_id"],"") 
       }
       if (type === REFRESH_TOKEN) {
-        const user = await authenticator.verifyRefreshToken(token);
+        const user = authenticator.verifyRefreshToken(token);
         userId = loGet(user,["_id"],"") 
       }
-      const user = await User.findById(userId).populated("role");
+      const user = await User.findById(userId).populate("role")
+      const role = loGet(user,["role","name"],"")
       req.credentials = { user, token };
       if (!user) throw new ServerError("Require authentication");
-      if (!roles.includes(user.role))
-        throw new ServerError(`Role ${user.role} is not allowed`, 401);
+      if (!roles.includes(role))
+        throw new ServerError(`Role ${role} is not allowed`, 401);
       return next();
     } catch (error) {
       logger.error(error);
       res.status(error.status || 500).json({ message: error.message });
     }
+    return next()
   };
 };
 

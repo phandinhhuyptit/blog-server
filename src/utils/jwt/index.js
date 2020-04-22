@@ -5,7 +5,7 @@ export const createToken = (user, type) => {
   return new Promise((resolve, reject) => {
     if (type === "ACCESS_TOKE")
       `Bearer ${jwt.sign(
-        { user },
+        user,
         configs.JWT_SECRET_TOKEN,
         {
           expiresIn: configs.ACCESS_TOKEN_EXPIRE,
@@ -19,7 +19,7 @@ export const createToken = (user, type) => {
       )}`;
     else
       `Bearer ${jwt.sign(
-        { user },
+        user,
         configs.JWT_SECRET_TOKEN,
         {
           expiresIn: configs.REFESH_TOKEN_EXPIRE,

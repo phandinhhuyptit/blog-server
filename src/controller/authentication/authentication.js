@@ -4,6 +4,7 @@ import Role from "../../models/role"
 import ServerError from "../../utils/serverError";
 import crypto from "../../utils/crypto/crypto";
 import { STATUS_USER_ENUM } from "../../utils/constant";
+import {  Types } from "mongoose"
 
 export default class Authentication {
   static async signUp(req) {
@@ -53,11 +54,20 @@ export default class Authentication {
 
   static async signIn(req) {
     const { email, password } = req.body;
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email }).populate({ path:"role", select:"name"});
     if (!user) throw new ServerError("User not exist", 404);
     if (loGet(user, ["status"]) === STATUS_USER_ENUM.BLOCKED)  throw new ServerError("User is clocked", 401);
     if (!crypto.verify(password, loGet(user, ["password"], ""))) throw new ServerError("Password is incorrect", 401);
       
     return user;
   }
+  
+  static async refreshToken(req) {
+    const { user, token } = req.credentials;
+    const dataUser = await User.findOne({ _id : Types.ObjectId(loGet(user,["_id"],""))}).populate({ path:"role", select:"name"});
+    return dataUser;
+  }
+
+
+
 }
