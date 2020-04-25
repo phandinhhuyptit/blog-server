@@ -1,19 +1,21 @@
-import mongoose, { Schema } from 'mongoose'
-import uniqueValidator from 'mongoose-unique-validator'
+import mongoose, { Schema } from "mongoose";
+import uniqueValidator from "mongoose-unique-validator";
 
-const userSchema = new Schema({ 
-  username : { type: String, required: true, unique: true },
-  fullname : { type : String, required : true},
-  password: { type: String, required: true, select: false },   
-  email: { type: String, required: true },
+const userSchema = new Schema({
+  firstName: { type: String, required: true },
+  lastName: { type: String, required: true },
+  dateOfBirth: { type: Date, min: "1930-01-01", max: Date.now() },
+  password: { type: String, required: true },
+  email: { type: String, required: true,unique: true },
   phone: { type: String, required: true },
-  gender: { type: String },
-  address: { type: String },
-  avatar: { type: String },
+  gender: { type: String, required: true },
+  address: { type: String, default: null },
+  avatar: { type: String, default: null },
   facebookID: { type: String, default: null },
-  active: { type: Boolean, default: true }, 
-})
+  status: { type: String, default: "active" },
+  role: { type: Schema.Types.ObjectId, ref: "Role" },
+});
 
-userSchema.plugin(uniqueValidator)
-export default mongoose.model('User',userSchema)
-
+userSchema.plugin(uniqueValidator);
+export default mongoose.model("User", userSchema);
+  
