@@ -32,14 +32,13 @@ const verifyAccessToken = async (token) => {
     const logouted =
       (await redisClient.getAsync(token)) == "logouted" ? true : false;
     if (logouted) throw ServerError("Token had expired");
-    // const payload = await jwt.verify(token, configs.JWT_SECRET_TOKEN)
-    const payload = await new Promise((resolve, reject) =>
-       jwt.verify(token, configs.JWT_SECRET_TOKEN, (error, payload) => {
+    const user = await new Promise((resolve, reject) =>
+      jwt.verify(token, configs.JWT_SECRET_TOKEN, (error, payload) => {
         if (error) return reject(error);
         return resolve(payload);
       })
     );
-    return payload;
+    return user;
   } catch (error) {
     throw ServerError(`${error.message}`);
   }
@@ -61,7 +60,7 @@ const verifyRefreshToken = async (token) => {
     Object.assign(Obj, { token: token });
     const revokedToken = await RevokedToken.findOne(Obj);
     if (revokedToken) throw ServerError("Token had expired");
-    const { user } = await new Promise((resolve, reject) =>
+    const user = await new Promise((resolve, reject) =>
       jwt.verify(token, configs.JWT_SECRET_TOKEN, (error, payload) => {
         if (error) return reject(error);
         return resolve(payload);
@@ -74,7 +73,12 @@ const verifyRefreshToken = async (token) => {
 };
 
 const expiryRefreshToken = async (token) => {
-  const { exp } = await jwt.verify(token, configs.JWT_SECRET_TOKEN);
+  const { exp } = await new Promise((resolve, reject) =>
+    jwt.verify(token, configs.JWT_SECRET_TOKEN, (error, payload) => {
+      if (error) return reject(error);
+      return resolve(payload);
+    })
+  );
   const expiredDate = new Date(exp * 1000);
   const createToken = {
     token,

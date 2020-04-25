@@ -12,6 +12,6 @@ const cmsRoleValue = Object.keys(allRole)
   .map( roleKey =>  allRole[roleKey] )
 const allRoleValue = Object.keys(allRole).map(roleKey => allRole[roleKey]);
 const { ACCESS_TOKEN } = TOKEN_ENUM;
-routes.post("/create-role",authorized(TOKEN_ENUM.ACCESS_TOKEN,cmsRoleValue),validatorBody(roleSchema.roleSchema),roleEndpoint.createRoleEndpoint);
+routes.post("/create-role",authorized(ACCESS_TOKEN,cmsRoleValue),validatorBody(roleSchema.roleSchema),roleEndpoint.createRoleEndpoint);
 
 export default routes;

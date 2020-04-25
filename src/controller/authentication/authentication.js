@@ -68,6 +68,6 @@ export default class Authentication {
     return dataUser;
   }
 
-
+  
 
 }

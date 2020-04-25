@@ -1,4 +1,5 @@
 import * as authEndpoint from "./authentication";
 import * as roleEndpoint from "./role";
+import * as userEndPoint from "./user";
 
-export { authEndpoint, roleEndpoint };
+export { authEndpoint, roleEndpoint, userEndPoint };
