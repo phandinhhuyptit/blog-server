@@ -1,7 +1,7 @@
 import Authentication from "../../../controller/authentication";
 import logger from "../../../utils/logger";
 import authenticator from "../../../utils/authenticator";
-import loGet from "lodash/get"
+import loGet from "lodash/get";
 export const signUpEndpoint = async (req, res) => {
   try {
     const user = await Authentication.signUp(req, res);

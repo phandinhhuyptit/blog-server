@@ -27,7 +27,7 @@ const authorized = (type, roles) => {
         const user = authenticator.verifyRefreshToken(token);
         userId = loGet(user,["_id"],"") 
       }
-      const user = await User.findById(userId).populate("role")
+      const user = await User.findById(userId).select("-password").populate("role")
       const role = loGet(user,["role","name"],"")
       req.credentials = { user, token };
       if (!user) throw new ServerError("Require authentication");

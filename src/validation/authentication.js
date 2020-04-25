@@ -30,10 +30,10 @@ const registerSchema = Joi.object().keys({
 });
 
 const changePasswordSchema = Joi.object().keys({
-  password: Joi.string().min(6).max(20).required().label("Password"),
-  newPassword: Joi.string().min(6).max(20).required().label("New Password"),
+  oldPassword: Joi.string().min(6).max(20).required().label("Old Password"),
+  password: Joi.string().min(6).max(20).required().label("New Password"),
   confirmNewPassword: Joi.any()
-    .valid(Joi.ref("newPassword"))
+    .valid(Joi.ref("password"))
     .required()
     .label("New Password confirm"),
 });
@@ -54,4 +54,5 @@ const resetPasswordSchema = Joi.object().keys({
 export default {
   loginSchema,
   registerSchema,
+  changePasswordSchema
 };
