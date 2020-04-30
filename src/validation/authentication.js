@@ -29,9 +29,35 @@ const registerSchema = Joi.object().keys({
   role: Joi.string(),
 });
 
-const changePasswordSchema = Joi.object().keys({
+const changeProfileSchema = Joi.object().keys({
+  firstName: Joi.string().max(50),
+  lastName: Joi.string().max(50),
+  phone: Joi.string().max(11),
+  dateOfBirth: Joi.date()
+    .min("1-1-1930")
+    .max("now")
+    .required()
+    .label("Date of birth"),
+  gender: Joi.string().valid(allSexValue),
+  address: Joi.string(),
+  email: Joi.string().email().max(256),
+  status: Joi.string().valid(allStatusValue),
+  role: Joi.string(),
+});
+
+
+
+const changePasswordMeSchema = Joi.object().keys({
   oldPassword: Joi.string().min(6).max(20).required().label("Old Password"),
   password: Joi.string().min(6).max(20).required().label("New Password"),
+  confirmNewPassword: Joi.any()
+    .valid(Joi.ref("password"))
+    .required()
+    .label("New Password confirm"),
+});
+
+const changePasswordAdminSchema = Joi.object().keys({
+  newPassword: Joi.string().min(6).max(20).required().label("New Password"),
   confirmNewPassword: Joi.any()
     .valid(Joi.ref("password"))
     .required()
@@ -54,5 +80,8 @@ const resetPasswordSchema = Joi.object().keys({
 export default {
   loginSchema,
   registerSchema,
-  changePasswordSchema
+  changePasswordMeSchema,
+  changePasswordAdminSchema,
+  changeProfileSchema,
+
 };

@@ -17,8 +17,14 @@ routes.get(
 routes.put(
   "/me/change-password",
   authorized(ACCESS_TOKEN, allRoleValue),
-  validatorBody(authSchema.changePasswordSchema),
+  validatorBody(authSchema.changePasswordMeSchema),
   userEndPoint.changePasswordByMeEndPoint
 );
+routes.put( 
+  "/me/change-profile",
+  authorized(ACCESS_TOKEN, allRoleValue),
+  validatorBody(authSchema.changeProfileSchema),
+  userEndPoint.changePasswordByMeEndPoint
+);  
 
 export default routes;
