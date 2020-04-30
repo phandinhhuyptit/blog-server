@@ -7,7 +7,7 @@ import { Types } from "mongoose";
 
 export default class UserV1 {
   static async getMe(req) {
-    const { user, token } = req.credentials;
+    const { user } = req.credentials;
     return user;
   }
 
@@ -41,7 +41,7 @@ export default class UserV1 {
   }
 
   static async changeProfileByMe(req) {
-    const { user, token } = req.credentials;
+    const { user} = req.credentials;
     const {
       firstName,
       lastName,

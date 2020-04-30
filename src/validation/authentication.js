@@ -83,5 +83,4 @@ export default {
   changePasswordMeSchema,
   changePasswordAdminSchema,
   changeProfileSchema,
-
 };
