@@ -31,7 +31,7 @@ const verifyAccessToken = async (token) => {
   try {
     const logouted =
       (await redisClient.getAsync(token)) == "logouted" ? true : false;
-    if (logouted) throw ServerError("Token had expired");
+    if (logouted) throw new ServerError("Token had expired");
     const user = await new Promise((resolve, reject) =>
       jwt.verify(token, configs.JWT_SECRET_TOKEN, (error, payload) => {
         if (error) return reject(error);
@@ -40,7 +40,7 @@ const verifyAccessToken = async (token) => {
     );
     return user;
   } catch (error) {
-    throw ServerError(`${error.message}`);
+    throw new ServerError(`${error.message}`);
   }
 };
 
@@ -59,7 +59,7 @@ const verifyRefreshToken = async (token) => {
     const Obj = {};
     Object.assign(Obj, { token: token });
     const revokedToken = await RevokedToken.findOne(Obj);
-    if (revokedToken) throw ServerError("Token had expired");
+    if (revokedToken) throw new ServerError("Token had expired");
     const user = await new Promise((resolve, reject) =>
       jwt.verify(token, configs.JWT_SECRET_TOKEN, (error, payload) => {
         if (error) return reject(error);
@@ -68,24 +68,29 @@ const verifyRefreshToken = async (token) => {
     );
     return user;
   } catch (error) {
-    throw error;
+    throw new ServerError(`${error.message}`);
   }
 };
 
 const expiryRefreshToken = async (token) => {
-  const { exp } = await new Promise((resolve, reject) =>
-    jwt.verify(token, configs.JWT_SECRET_TOKEN, (error, payload) => {
-      if (error) return reject(error);
-      return resolve(payload);
-    })
-  );
-  const expiredDate = new Date(exp * 1000);
-  const createToken = {
-    token,
-    expiredAt: expiredDate,
-  };
-  const revokedToken = new RevokedToken(createToken).save();
-  return revokedToken;
+  try {
+    const { exp } = await new Promise((resolve, reject) =>
+      jwt.verify(token, configs.JWT_SECRET_TOKEN, (error, payload) => {
+        if (error) return reject(error);
+        return resolve(payload);
+      })
+    );
+    const expiredDate = new Date(exp * 1000);
+    const createToken = {
+      token,
+      expiredAt: expiredDate,
+    };
+    const revokedToken = new RevokedToken(createToken).save();
+    return revokedToken;
+  }
+  catch (error) {
+    throw new ServerError(`${error.message}`);
+  }
 };
 
 export default {
