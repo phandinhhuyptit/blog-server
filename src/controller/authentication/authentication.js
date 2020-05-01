@@ -30,10 +30,9 @@ export default class Authentication {
       if(!roleUser) throw new ServerError("Role not exist", 404);   
     }
     else {
-      roleUser = await Role.findOne({ name : "member"}) 
+      roleUser = await Role.findOne({ name : "user"}) 
     }  
     
-
     const objUser = {
       phone,
       username,
@@ -67,7 +66,4 @@ export default class Authentication {
     const dataUser = await User.findOne({ _id : Types.ObjectId(loGet(user,["_id"],""))}).populate({ path:"role", select:"name"});
     return dataUser;
   }
-
-  
-
 }
