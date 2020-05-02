@@ -1,4 +1,5 @@
 import loGet from "lodash/get";
+import authenticator from "../../utils/authenticator";
 import User from "../../models/user";
 import Role from "../../models/role"
 import ServerError from "../../utils/serverError";
@@ -30,9 +31,11 @@ export default class Authentication {
       if(!roleUser) throw new ServerError("Role not exist", 404);   
     }
     else {
-      roleUser = await Role.findOne({ name : "user"}) 
+      roleUser = await Role.findOne({ name : "member"}) 
     }  
     
+ 
+
     const objUser = {
       phone,
       username,
@@ -43,7 +46,7 @@ export default class Authentication {
       email,
       gender,
       address,
-      role : loGet(roleUser,["_id"],""),
+      role : Types.ObjectId(loGet(roleUser,["_id"],"")),
     };
 
     user = new User(objUser);
@@ -66,4 +69,12 @@ export default class Authentication {
     const dataUser = await User.findOne({ _id : Types.ObjectId(loGet(user,["_id"],""))}).populate({ path:"role", select:"name"});
     return dataUser;
   }
+
+  static async logOut(req) {
+    const { user, token, refreshToken } = req.credentials;
+    await authenticator.expiryAccessToken(token)
+    await authenticator.expiryAccessToken(refreshToken)
+    return user
+  }    
+
 }

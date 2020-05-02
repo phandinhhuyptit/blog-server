@@ -12,8 +12,8 @@ const { ACCESS_TOKEN ,REFRESH_TOKEN } = TOKEN_ENUM;
 
 routes.post("/sign-up", validatorBody(authSchema.registerSchema), authEndpoint.signUpEndpoint);
 routes.post("/sign-in", validatorBody(authSchema.loginSchema), authEndpoint.signInEndPoint);
-routes.post("/refresh-token", authorized(REFRESH_TOKEN,allRoleValue,authEndpoint.refreshTokenEndpoint))
-
+routes.post("/refresh-token", authorized(REFRESH_TOKEN,allRoleValue),validatorBody(authSchema.refreshToken),authEndpoint.refreshTokenEndpoint)
+routes.post("/log-out", authorized(REFRESH_TOKEN,allRoleValue),validatorBody(authSchema.logOutSchema),authEndpoint.logOutEndpoint)
 
 // routes.get(
 //   "/user/sign-in",

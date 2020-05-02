@@ -51,12 +51,12 @@ export const signInEndPoint = async (req, res) => {
 };
 
 export const refreshTokenEndpoint = async (req, res) => {
-  const vailid = ["_id", "firstName", "lastName","role"];
+  const valid = ["_id", "firstName", "lastName","role"];
   try {
     const user = await Authentication.refreshToken(req, res);
     const transformedUser = user.toJSON();
     const newUser = Object.keys(transformedUser).reduce((acc, key) => {
-      if (vailid.includes(key)) {
+      if (valid.includes(key)) {
         if(key === "role") return  { ...acc, [key]: user[key].name };
         return { ...acc, [key]: user[key] };
       }
@@ -75,3 +75,15 @@ export const refreshTokenEndpoint = async (req, res) => {
   }
 };
 
+
+export const logOutEndpoint = async (req, res) => {
+  try {
+    const user = await Authentication.logOut(req, res);
+    res.json({
+      message: "Success",
+    });
+  } catch (error) {
+    logger.error(error);
+    res.status(error.code || 500).json({ message: error.message });
+  }
+};

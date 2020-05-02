@@ -64,6 +64,15 @@ const changePasswordAdminSchema = Joi.object().keys({
     .label("New Password confirm"),
 });
 
+const logOutSchema = Joi.object().keys({
+  refreshToken: Joi.string().required().label("Refresh Token"),
+});
+
+const refreshToken = Joi.object().keys({
+  refreshToken: Joi.string().required().label("Refresh Token"),
+});
+
+
 const forgotPasswordSchema = Joi.object().keys({
   email: Joi.string().email().max(256).required(),
 });
@@ -83,4 +92,6 @@ export default {
   changePasswordMeSchema,
   changePasswordAdminSchema,
   changeProfileSchema,
+  logOutSchema,
+  refreshToken,
 };
