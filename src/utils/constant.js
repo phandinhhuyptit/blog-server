@@ -35,3 +35,13 @@ export const SCHEDULE = {
     second: 0,
   },
 };
+
+export const EVENT_SOCKET = {
+  CONNECT: "connect",
+  ERROR: "error",
+  DISCONNECT: "disconnect",
+  SEND_MESSAGE: "sendMessage",
+  NUMBER_ONLINE: "numberOnline",
+  CREATE_COMMENT: "createComment",
+  CREATE_POST: "createPost",
+};
