@@ -26,7 +26,7 @@ const authorized = (type, roles) => {
       }
       if (type === REFRESH_TOKEN) {
         const { refreshToken } = req.body
-        const user = authenticator.verifyRefreshToken(refreshToken);
+        const user = await authenticator.verifyRefreshToken(refreshToken);
         userId = loGet(user,["_id"],"") 
         req.credentials = { token , refreshToken };
       }

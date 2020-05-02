@@ -3,7 +3,7 @@ import configs from "../../configs/config";
 
 export const createToken = (user, type) => {
   return new Promise((resolve, reject) => {
-    if (type === "ACCESS_TOKE")
+    if (type === "ACCESS_TOKEN"){
       `Bearer ${jwt.sign(
         user,
         configs.JWT_SECRET_TOKEN,
@@ -17,12 +17,13 @@ export const createToken = (user, type) => {
           return resolve(token);
         }
       )}`;
-    else
+    }
+    else{
       `Bearer ${jwt.sign(
         user,
         configs.JWT_SECRET_TOKEN,
         {
-          expiresIn: configs.REFESH_TOKEN_EXPIRE,
+          expiresIn: configs.REFRESH_TOKEN_EXPIRE,
         },
         (error, token) => {
           if (error) {
@@ -31,5 +32,7 @@ export const createToken = (user, type) => {
           return resolve(token);
         }
       )}`;
+    }
+      
   });
 };

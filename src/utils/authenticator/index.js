@@ -4,13 +4,13 @@ import { createToken } from "../jwt";
 import configs from "../../configs/config";
 import ServerError from "../serverError";
 import RevokedToken from "../../models/revokedToken.js";
-import { REFESH_TOKEN, ACCESS_TOKEN } from "../constant";
+import { REFRESH_TOKEN, ACCESS_TOKEN } from "../constant";
 
 const redisClient = client;
 
 const getAllToken = async (user) => {
   const accessToken = await createToken(user, ACCESS_TOKEN);
-  const refreshToken = await createToken(user, REFESH_TOKEN);
+  const refreshToken = await createToken(user, REFRESH_TOKEN);
   return {
     accessToken,
     refreshToken,
@@ -23,7 +23,7 @@ const getAccessToken = async (user) => {
 };
 
 const getRefreshToken = async (user) => {
-  const refreshToken = await createToken(user, REFESH_TOKEN);
+  const refreshToken = await createToken(user, REFRESH_TOKEN);
   return refreshToken;
 };
 
