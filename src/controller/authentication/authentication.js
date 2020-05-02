@@ -73,7 +73,7 @@ export default class Authentication {
   static async logOut(req) {
     const { user, token, refreshToken } = req.credentials;
     await authenticator.expiryAccessToken(token)
-    await authenticator.expiryAccessToken(refreshToken)
+    await authenticator.expiryRefreshToken(refreshToken)
     return user
   }    
 
