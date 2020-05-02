@@ -1,17 +1,20 @@
 import SocketIO from "socket.io";
 import jwt from "jsonwebtoken";
 import loGet from "lodash/get";
+import User from "../models/user"
 import logger from "../utils/logger";
 import configs from "../configs/config";
 import ServerError from "../utils/serverError";
-import { ROLES } from "../utils/constants";
-import { findIndex as loFindIndex, remove as loRemove } from "lodash";
-import { EVENT_SOCKET } from "../utils/constants";
+import { remove as loRemove } from "lodash";
+import { EVENT_SOCKET } from "../utils/constant";
+
+const NUMBER_FAKE = 2;
 
 class _SocketService {
   constructor() {
     this.io = null;
     this.connections = {};
+    this.countConnects = 0;
 
     this.onConnection = this.onConnection.bind(this);
   }
@@ -37,27 +40,11 @@ class _SocketService {
         if (!socket.user)
           throw new ServerError("Please login to continue", 401);
 
-        if (
-          socket.user.role !== ROLES.ADMIN &&
-          socket.user.role !== ROLES.USER &&
-          socket.user.role !== ROLES.CLINIC_ADMIN &&
-          socket.user.role !== ROLES.MODERATOR &&
-          socket.user.role !== ROLES.RECEPTIONIST &&
-          socket.user.role !== ROLES.SALE &&
-          socket.user.role !== ROLES.CONSULTANT &&
-          socket.user.role !== ROLES.TECHNICIAN &&
-          socket.user.role !== ROLES.WEVA_SALE &&
-          loGet(socket, ["user", "role"]) !== ROLES.CUSTOMER_CARE
-        ) {
-          throw new ServerError("Access denied", 403);
-        }
-
         return next();
       } catch (error) {
         next(error);
       }
     });
-
     this.io.on("connection", this.onConnection);
   }
 
@@ -65,90 +52,48 @@ class _SocketService {
     this.io && this.io.close();
   }
 
-  onConnection(socket) {
+  async onConnection(socket) {
     if (!this.connections) this.connections = {};
 
-    const clinicId = socket.user.clinicId;
     const userId = socket.user._id;
-    if (clinicId) {
-      // Manage socket id follow clinicId
-      if (this.connections[clinicId]) {
-        const indexConnections = loFindIndex(
-          this.connections[clinicId],
-          (item) => item.userId === userId
-        );
 
-        const { role } = socket.user;
-
-        if (indexConnections < 0) {
-          this.connections[clinicId].push({
-            userId,
-            role,
-            socketIds: [socket.id],
-          });
-        } else {
-          this.connections[clinicId][indexConnections].socketIds.push(
-            socket.id
-          );
-        }
-      } else {
-        this.connections[clinicId] = [
-          {
-            userId: socket.user._id,
-            role: socket.user.role,
-            socketIds: [socket.id],
-          },
-        ];
+    if (this.connections[userId]) {
+      const socketIds = loGet(this.connections[userId], ["socketIds"], []);
+      if (socketIds.indexOf(socket.id) < 0) {
+        socketIds.push(socket.id);
       }
+      this.connections[userId].socketIds = socketIds;
     } else {
-      // Manage socket id follow userId
-      if (this.connections[userId]) {
-        const socketIds = loGet(this.connections[userId], ["socketIds"], []);
-        if (socketIds.indexOf(socket.id) < 0) {
-          socketIds.push(socket.id);
-        }
-        this.connections[userId].socketIds = socketIds;
-      } else {
-        this.connections[userId] = {
-          role: socket.user.role,
-          socketIds: [socket.id],
-        };
-      }
+      this.connections[userId] = {
+        socketIds: [socket.id],
+      };
+      this.countConnects = this.countConnects + 1;
     }
+    await User.findByIdAndUpdate(userId, { onlineAt: new Date() });
 
-    socket.on(EVENT_SOCKET.DISCONNECT, (reason) => {
-      if (clinicId) {
-        const indexConnections = loFindIndex(
-          this.connections[clinicId],
-          (item) => item.userId === userId
-        );
-        if (indexConnections >= 0) {
-          //loRemove socketId disconnect in array socketIds of user
-          loRemove(
-            this.connections[clinicId][indexConnections].socketIds,
-            (item) => item === socket.id
-          );
+    this.io.emit(EVENT_SOCKET.NUMBER_ONLINE, {
+      numberOnline: this.countConnects + NUMBER_FAKE,
+      online: userId,
+    });
 
-          // If array socketIds empty loRemove user from array connections of clinic
-          if (
-            this.connections[clinicId][indexConnections].socketIds.length === 0
-          ) {
-            this.connections[clinicId].splice(indexConnections, 1);
-
-            if (this.connections[clinicId].length === 0)
-              delete this.connections[clinicId];
-          }
-        }
-      } else {
-        loRemove(
-          this.connections[userId].socketIds,
-          (item) => item === socket.id
-        );
-        // If array socketIds empty loRemove user from array connections of user
-        if (this.connections[userId].socketIds.length === 0) {
-          delete this.connections[userId];
-        }
+    socket.on(EVENT_SOCKET.DISCONNECT, async (reason) => {
+      loRemove(
+        this.connections[userId].socketIds,
+        (item) => item === socket.id
+      );
+      // If array socketIds empty loRemove user from array connections of user
+      if (this.connections[userId].socketIds.length === 0) {
+        delete this.connections[userId];
+        this.countConnects = this.countConnects - 1;
       }
+
+      await User.findByIdAndUpdate(userId, { offlineAt: new Date() });
+
+      this.io.emit(EVENT_SOCKET.NUMBER_ONLINE, {
+        numberOnline: this.countConnects + NUMBER_FAKE,
+        offline: userId,
+      });
+
       logger.warning(reason);
     });
 
@@ -163,6 +108,10 @@ class _SocketService {
 
   getConnections() {
     return this.connections;
+  }
+
+  getCountConnections() {
+    return this.countConnects + NUMBER_FAKE;
   }
 }
 
