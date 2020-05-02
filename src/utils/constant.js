@@ -1,5 +1,5 @@
 export const ACCESS_TOKEN = "ACCESS_TOKEN";
-export const REFESH_TOKEN = "REFESH_TOKEN";
+export const REFRESH_TOKEN = "REFRESH_TOKEN";
 export const STATUS_USER_ENUM = {
   ACTIVE: "active",
   PENDING: "pending",
