@@ -22,14 +22,17 @@ const authorized = (type, roles) => {
       if (type === ACCESS_TOKEN) {
         const user = await authenticator.verifyAccessToken(token)
         userId = loGet(user,["_id"],"") 
+        req.credentials = { token };
       }
       if (type === REFRESH_TOKEN) {
-        const user = authenticator.verifyRefreshToken(token);
+        const { refreshToken } = req.body
+        const user = authenticator.verifyRefreshToken(refreshToken);
         userId = loGet(user,["_id"],"") 
+        req.credentials = { token , refreshToken };
       }
       const user = await User.findById(userId).select("-password").populate("role")
       const role = loGet(user,["role","name"],"")
-      req.credentials = { user, token };
+      Object.assign(req.credentials,{user})
       if (!user) throw new ServerError("Require authentication");
       if (!roles.includes(role))
         throw new ServerError(`Role ${role} is not allowed`, 401);
