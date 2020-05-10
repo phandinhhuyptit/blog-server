@@ -6,8 +6,8 @@ services:
             - 27010:27017
         restart: always
         volumes:
-            - /root/blog-backend-backup/backups:/backups
-        container_name: meetbear-mongo-db
+            - /tmp/blog-backend-backup/backups:/backups
+        container_name: blog-mongo-db
     redis:
         image: redis
         ports:
